@@ -1,6 +1,11 @@
-﻿namespace DoctorAppointmentSystem.Services.Interfaces
+﻿using DoctorAppointmentSystem.DTOs.Admin;
+
+namespace DoctorAppointmentSystem.Services.Interfaces
 {
-    public class IAdminService
+    public interface IAdminService
     {
+        Task<DashboardDto> GetDashboardAsync();
+        Task<AnalyticsDto> GetAnalyticsAsync(DateTime from, DateTime to);
     }
+
 }

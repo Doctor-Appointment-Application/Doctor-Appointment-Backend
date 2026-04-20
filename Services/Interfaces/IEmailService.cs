@@ -1,6 +1,11 @@
-﻿namespace DoctorAppointmentSystem.Services.Interfaces
+﻿using DoctorAppointmentSystem.DTOs.Appointment;
+
+namespace DoctorAppointmentSystem.Services.Interfaces
 {
-    public class IEmailService
+    public interface IEmailService
     {
+        Task SendConfirmationAsync(string email, AppointmentResponseDto appointment);
+        Task SendReminderAsync(string email, AppointmentResponseDto appointment);
     }
+
 }
