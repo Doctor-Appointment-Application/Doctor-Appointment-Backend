@@ -1,7 +1,10 @@
-﻿using DoctorAppointmentSystem.Data;
-using DoctorAppointmentSystem.DTOs.Admin;
+﻿
+using DoctorAppointmentSystem.Data;
+using Microsoft.EntityFrameworkCore;
 using DoctorAppointmentSystem.Models;
 using DoctorAppointmentSystem.Repositories.Interfaces;
+using DoctorAppointmentSystem.DTOs.Admin;
+using DoctorAppointmentSystem.DTOs.Doctor;
 
 namespace DoctorAppointmentSystem.Repositories
 {
@@ -28,12 +31,12 @@ namespace DoctorAppointmentSystem.Repositories
                 OfflineAppointments = todayAppts.Count(a => a.Mode == "Offline"),
                 TodayRevenue = todayAppts.Sum(a => a.Doctor.ConsultationFee),
                 SpecialtyBreakdown = todayAppts.GroupBy(a => a.Doctor.Specialty.Name)
-                    .Select(g => new SpecialtyStatsDto
-                    {
-                        Specialty = g.Key,
-                        Count = g.Count(),
-                        Revenue = g.Sum(a => a.Doctor.ConsultationFee)
-                    }).ToList()
+    .Select(g => new SpecialtyBreakdownDto   // ← change SpecialtyDto to this
+    {
+        Specialty = g.Key,
+        Count = g.Count(),
+        Revenue = g.Sum(a => a.Doctor.ConsultationFee)
+    }).ToList()
             };
         }
 

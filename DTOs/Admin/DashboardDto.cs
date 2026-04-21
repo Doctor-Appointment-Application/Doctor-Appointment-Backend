@@ -1,4 +1,6 @@
-﻿namespace DoctorAppointmentSystem.DTOs.Admin
+﻿using DoctorAppointmentSystem.DTOs.Admin;
+
+namespace DoctorAppointmentSystem.DTOs.Admin
 {
     public class DashboardDto
     {
@@ -8,7 +10,6 @@
         public int OnlineAppointments { get; set; }
         public int OfflineAppointments { get; set; }
         public decimal TodayRevenue { get; set; }
-        public List<SpecialtyStatsDto> SpecialtyBreakdown { get; set; } = new();
+        public List<SpecialtyBreakdownDto> SpecialtyBreakdown { get; set; } = new();
     }
-
 }

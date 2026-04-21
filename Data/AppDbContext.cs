@@ -20,6 +20,10 @@ namespace DoctorAppointmentSystem.Data
                 .WithMany(u => u.Appointments).HasForeignKey(a => a.PatientId);
             mb.Entity<TimeSlot>().HasOne(t => t.Doctor)
                 .WithMany(d => d.TimeSlots).HasForeignKey(t => t.DoctorId);
+            mb.Entity<Notification>()
+              .HasOne(n => n.User)
+              .WithMany()
+              .HasForeignKey(n => n.UserId);
         }
     }
 

@@ -1,25 +1,43 @@
-﻿using DoctorAppointmentSystem.Models;
+﻿using DoctorAppointmentSystem.DTOs.Auth;
+using DoctorAppointmentSystem.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 
 namespace DoctorAppointmentSystem.Helpers
 {
-    public class AppDbContext : DbContext
+    public class JwtHelper
     {
-        public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
-        public DbSet<User> Users => Set<User>();
-        public DbSet<Doctor> Doctors => Set<Doctor>();
-        public DbSet<Specialty> Specialties => Set<Specialty>();
-        public DbSet<Appointment> Appointments => Set<Appointment>();
-        public DbSet<TimeSlot> TimeSlots => Set<TimeSlot>();
-        protected override void OnModelCreating(ModelBuilder mb)
+        private readonly IConfiguration _config;
+        public JwtHelper(IConfiguration config) => _config = config;
+
+        public AuthResponseDto GenerateToken(User user)
         {
-            mb.Entity<User>().HasIndex(u => u.Email).IsUnique();
-            mb.Entity<Doctor>().HasOne(d => d.Specialty)
-                .WithMany(s => s.Doctors).HasForeignKey(d => d.SpecialtyId);
-            mb.Entity<Appointment>().HasOne(a => a.Patient)
-                .WithMany(u => u.Appointments).HasForeignKey(a => a.PatientId);
-            mb.Entity<TimeSlot>().HasOne(t => t.Doctor)
-                .WithMany(d => d.TimeSlots).HasForeignKey(t => t.DoctorId);
+            var claims = new[] {
+            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+            new Claim(ClaimTypes.Email, user.Email),
+            new Claim(ClaimTypes.Role, user.Role),
+        };
+            var key = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(_config["Jwt:Key"]!));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+            var expiry = DateTime.UtcNow.AddHours(8);
+            var token = new JwtSecurityToken(
+                issuer: _config["Jwt:Issuer"],
+                audience: _config["Jwt:Audience"],
+                claims: claims, expires: expiry, signingCredentials: creds);
+            return new AuthResponseDto
+            {
+                Token = new JwtSecurityTokenHandler().WriteToken(token),
+                FullName = user.FullName,
+                Email = user.Email,
+                Role = user.Role,
+                Expiry = expiry
+            };
         }
     }
+
+}
 
